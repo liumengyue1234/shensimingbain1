@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>审思明辨——智判法案双擎系统</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/markdown.css">
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="logo">&#9878;</span>
+            <span class="brand-text">审思明辨</span>
+            <span class="brand-sub">智判法案双擎系统</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-link active" data-tab="qa">法律问答</a>
+            <a href="#" class="nav-link" data-tab="law">法条检索</a>
+            <a href="#" class="nav-link" data-tab="case">类案匹配</a>
+            <a href="#" class="nav-link" data-tab="strategy">策略推演</a>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+
+        <!-- ===== Tab 1: 法律问答 ===== -->
+        <section id="tab-qa" class="tab-panel active">
+            <div class="panel-header">
+                <h2>对话式法律问答</h2>
+                <p>输入您的法律问题，系统将检索相关法条与案例，为您提供专业解答</p>
+            </div>
+            <div class="chat-container">
+                <div class="chat-messages" id="qa-messages">
+                    <div class="welcome-msg">
+                        <div class="welcome-icon">&#9878;</div>
+                        <h3>欢迎使用审思明辨</h3>
+                        <p>我是您的法律智能助手，可以回答法律问题、检索法条、匹配类案、推演诉讼策略。</p>
+                        <div class="quick-questions">
+                            <button class="quick-btn" onclick="askQuick('上班途中发生车祸能认定为工伤吗？')">工伤认定相关问题</button>
+                            <button class="quick-btn" onclick="askQuick('房屋买卖合同纠纷如何处理？')">房屋买卖纠纷</button>
+                            <button class="quick-btn" onclick="askQuick('劳动合同解除的赔偿标准是什么？')">劳动合同解除</button>
+                            <button class="quick-btn" onclick="askQuick('交通事故中如何划分责任？')">交通事故责任</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <textarea id="qa-input" placeholder="请输入您的法律问题..." rows="2" onkeydown="handleQaKey(event)"></textarea>
+                    <button class="send-btn" onclick="sendQaMessage()">
+                        <span>发送</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== Tab 2: 法条检索 ===== -->
+        <section id="tab-law" class="tab-panel">
+            <div class="panel-header">
+                <h2>精准法条检索</h2>
+                <p>支持关键词与语义双模式检索，快速定位相关法律法规与司法解释</p>
+            </div>
+            <div class="search-panel">
+                <div class="search-controls">
+                    <div class="search-mode">
+                        <label class="mode-btn active">
+                            <input type="radio" name="law-mode" value="semantic" checked>
+                            <span>语义检索</span>
+                        </label>
+                        <label class="mode-btn">
+                            <input type="radio" name="law-mode" value="title">
+                            <span>关键词检索</span>
+                        </label>
+                    </div>
+                    <div class="search-row">
+                        <input type="text" id="law-input" placeholder="输入法律法规相关问题或关键词..." class="search-input">
+                        <button class="search-btn" onclick="searchLaws()">检索法规</button>
+                    </div>
+                </div>
+                <div class="results-area" id="law-results">
+                    <div class="empty-state">
+                        <div class="empty-icon">&#128214;</div>
+                        <p>输入查询条件开始检索相关法规</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== Tab 3: 类案匹配 ===== -->
+        <section id="tab-case" class="tab-panel">
+            <div class="panel-header">
+                <h2>相似案例匹配</h2>
+                <p>基于案情描述智能匹配类案，生成结构化类案检索报告</p>
+            </div>
+            <div class="search-panel">
+                <div class="search-controls">
+                    <div class="search-advanced">
+                        <select id="court-level" class="select-input">
+                            <option value="">全部法院层级</option>
+                            <option value="0">最高人民法院</option>
+                            <option value="1">高级人民法院</option>
+                            <option value="2">中级人民法院</option>
+                            <option value="3">基层人民法院</option>
+                        </select>
+                    </div>
+                    <div class="search-row">
+                        <input type="text" id="case-input" placeholder="描述案件争议焦点或案情关键词..." class="search-input">
+                        <button class="search-btn" onclick="searchCases()">检索类案</button>
+                    </div>
+                </div>
+                <div class="results-area" id="case-results">
+                    <div class="empty-state">
+                        <div class="empty-icon">&#128220;</div>
+                        <p>输入案情描述开始检索相似案例</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== Tab 4: 诉讼策略推演 ===== -->
+        <section id="tab-strategy" class="tab-panel">
+            <div class="panel-header">
+                <h2>诉讼策略推演</h2>
+                <p>上传起诉状或案情后，智能体切换"对方律师"视角，生成质证意见、风险提示及策略报告</p>
+            </div>
+            <div class="strategy-panel">
+                <div class="strategy-input-area">
+                    <div class="upload-hint">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                        <span>请粘贴起诉状或案情描述</span>
+                    </div>
+                    <textarea id="strategy-input" placeholder="请粘贴起诉状全文或详细案情描述（包括当事人信息、诉讼请求、事实与理由等）&#10;&#10;系统将以对方律师视角进行分析，生成质证意见与诉讼风险报告..." rows="10"></textarea>
+                    <button class="analyze-btn" onclick="analyzeStrategy()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                        <span>开始策略推演</span>
+                    </button>
+                </div>
+                <div class="results-area" id="strategy-results">
+                    <div class="empty-state">
+                        <div class="empty-icon">&#9878;</div>
+                        <p>输入案情后点击"开始策略推演"生成分析报告</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 加载遮罩 -->
+    <div class="loading-overlay" id="loading">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p id="loading-text">正在检索中，请稍候...</p>
+        </div>
+    </div>
+
+    <!-- Toast 通知 -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
