@@ -1,5 +1,7 @@
 """
-类案检索核心模块
+类案检索核心模块（优化版）
+- 大模型调用改为可选
+- 截短 prompt 减少 token 消耗
 """
 from utils.deli_client import DeliClient
 from utils.hunyuan_client import HunyuanClient
@@ -12,11 +14,17 @@ class CaseRetrievalEngine:
         self.deli = DeliClient()
         self.hunyuan = HunyuanClient()
 
-    def search_and_analyze(self, query: str, page_size: int = 5) -> dict:
+    def search_and_analyze(
+        self,
+        query: str,
+        page_size: int = 5,
+        with_ai_analysis: bool = True
+    ) -> dict:
         """
         检索类案并生成分析报告
         :param query: 用户查询文本
         :param page_size: 返回案例数量
+        :param with_ai_analysis: 是否调用大模型生成分析
         """
         # 1. 调用得理 API 检索类案
         result = self.deli.search_cases(
@@ -33,22 +41,24 @@ class CaseRetrievalEngine:
                 "analysis": "暂未检索到相关案例，请调整关键词后重试。"
             }
 
-        # 2. 调用混元大模型生成类案分析报告
-        case_text = self._format_cases(cases)
-        prompt = f"""
-        #用户输入的问题：{query}
-        #检索出的类案列表：{case_text}
-        
-        你是一名经验丰富的律师，擅长基于用户输入问题检索出的类案（即与用户问题高度相关的相似案例）进行分析，
-        并生成一份结构清晰、内容详实的类案检索报告。
-        
-        要求：
-        1. 报告整体结构须采用"总分总"结构：先概述，再分述类案要点，最后总结归纳。
-        2. 仅可使用通过用户问题检索得出的类案列表中的案例，严禁引用类案列表之外的任何案例。
-        3. 每个案例须包含：案件名称、裁判法院、裁判时间、核心争议、裁判要旨。
-        """
-        analysis = self.hunyuan.chat(prompt)
-        analysis_text = self.hunyuan.extract_content(analysis)
+        analysis_text = ""
+        # 2. 按需调用大模型生成类案分析报告
+        if with_ai_analysis and self.hunyuan.app_key:
+            case_text = self._format_cases(cases)
+            prompt = (
+                f"用户问题：{query}\n\n"
+                f"检索到的类案（共{len(cases)}个）：\n{case_text}\n\n"
+                "请以律师视角，用总-分-总结构，"
+                "简要生成类案检索报告（每个案例说明裁判要旨，总结控制在400字内）。"
+                "仅使用上述案例，不得引用其他案例。"
+            )
+            try:
+                analysis = self.hunyuan.chat(prompt)
+                analysis_text = self.hunyuan.extract_content(analysis)
+            except Exception:
+                analysis_text = "AI 分析暂时不可用，请检查元器配置。"
+        else:
+            analysis_text = "（未配置腾讯元器，仅展示检索结果）"
 
         return {
             "query": query,
@@ -58,13 +68,15 @@ class CaseRetrievalEngine:
         }
 
     def _format_cases(self, cases: list) -> str:
-        """格式化案例列表为文本"""
+        """格式化案例列表（精简版，减少 token）"""
         formatted = []
         for i, case in enumerate(cases, 1):
+            abstract = case.get("abstract", "暂无摘要")
+            if abstract:
+                abstract = abstract[:200]  # ★ 截短摘要，减少 token
             formatted.append(
-                f"{i}. 案件名称：{case.get('caseName', '未知')}\n"
-                f"   法院：{case.get('courtName', '未知')}\n"
-                f"   裁判时间：{case.get('judgeDate', '未知')}\n"
-                f"   摘要：{case.get('abstract', '暂无摘要')}"
+                f"{i}. {case.get('caseName', '未知案件')}"
+                f"｜{case.get('courtName', '')} {case.get('judgeDate', '')}\n"
+                f"   摘要：{abstract}"
             )
         return "\n\n".join(formatted)
