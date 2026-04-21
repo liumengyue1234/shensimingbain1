@@ -2,8 +2,4 @@ fastapi==0.110.0
 uvicorn==0.29.0
 requests==2.31.0
 python-dotenv==1.0.1
-tencentcloud-sdk-python-hunyuan==3.0.1194
-pydantic==2.6.4
-httpx==0.27.0
-aiohttp==3.9.5
-python-multipart==0.0.9
+aiofiles==23.2.1
