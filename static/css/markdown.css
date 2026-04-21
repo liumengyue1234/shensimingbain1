@@ -1,0 +1,75 @@
+/* Markdown 渲染辅助样式（用于 AI 回复） */
+.md-content {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--text);
+}
+
+.md-content h1 { font-size: 20px; font-weight: 700; color: var(--primary); margin: 16px 0 8px; }
+.md-content h2 { font-size: 18px; font-weight: 700; color: var(--primary); margin: 14px 0 6px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+.md-content h3 { font-size: 16px; font-weight: 600; color: var(--primary); margin: 12px 0 4px; }
+
+.md-content p { margin-bottom: 8px; }
+.md-content ul, .md-content ol { padding-left: 24px; margin: 6px 0; }
+.md-content li { margin-bottom: 4px; }
+.md-content li::marker { color: var(--accent); }
+
+.md-content strong { color: var(--primary-dark); font-weight: 600; }
+.md-content em { font-style: italic; color: var(--text-light); }
+
+.md-content blockquote {
+    border-left: 4px solid var(--accent);
+    padding: 8px 16px;
+    margin: 8px 0;
+    background: var(--bg);
+    border-radius: 0 6px 6px 0;
+    color: var(--text-light);
+}
+
+.md-content code {
+    background: var(--bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--error);
+}
+
+.md-content pre {
+    background: var(--primary-dark);
+    color: #e0e0e0;
+    padding: 12px 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 8px 0;
+}
+
+.md-content pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+}
+
+.md-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0;
+}
+
+.md-content th, .md-content td {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 13px;
+}
+
+.md-content th {
+    background: var(--bg);
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.md-content hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 16px 0;
+}
